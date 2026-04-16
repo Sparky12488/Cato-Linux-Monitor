@@ -9,6 +9,11 @@ It Provides a traffic-light indicator for your Cato status and integrates with t
 * **Native Notifications:** Alerts you of state changes using the native Linux D-Bus notifications- no external CLI tolls required.
 * **Resource Efficient:** Built in Go, runs quietly in the background without draining system resources.
 
+## Prerequisites
+This application requuires the standard Linux app indicator runtime libraries. 
+On Debian/Ubuntu-base systems, you can ensure you have them by running the following with sudo or as root:
+`apt install libayatana-appindicator3-1`
+
 ## Installation
 
 1. Head over to the [Releases](../../releases) page and download the latest `cato-monitor-linux-amd64.tar.gz` .
@@ -44,6 +49,8 @@ It Provides a traffic-light indicator for your Cato status and integrates with t
 By default, this application uses standard traffic-light icons that are embeded directly into the single executable file.
 However, you can easily override these with your own custom icoms!
 
+Recomened size is 256x256.
+
 To use custom icons:
 1. Create a folder named `icons` in the exact same directory where your `cato-monitor` executable lives.
 2. Add your custom transparent PNG files into that folder. They must be named exactly:
@@ -53,3 +60,5 @@ To use custom icons:
     * `red.png` (Disconnected)
 
 When the monitor starts, it checks this local `icons` folder first. if it finds your custom images, it will use them (perfect for custom system themes or Tux penguins!). if a file is missing or the folder dosen't exist, it seamlessly falls back to the embedded default icons.
+
+any custom Icons I have created or that have been submitted will be put in the folder called `customIcons`
