@@ -13,10 +13,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout Code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
             
             - name: Set up Go
-              uses: actions/setup-go@v5
+              uses: actions/setup-go@v6
               with:
                 go-version: '1.22'
             
@@ -31,15 +31,27 @@ jobs:
             - name: Package Release
               run: tar -czvf cato-monitor-linux-amd64.tar.gz cato-monitor
 
-            - name: Generate Checksums
+            - name: Generate Release Checksums
               run: |
                 sha256sum cato-monitor-linux-amd64.tar.gz > cato-monitor-linux-amd64.tar.gz.sha256
                 md5sum cato-monitor-linux-amd64.tar.gz > cato-monitor-linux-amd64.tar.gz.md5
 
+            - name: Package Custom Icons
+              run: tar -czvf cato-monitor-custom-icons.tar.gz customIcons/
+
+            - name: Generate Custom Icons Checksums
+              run: |
+                sha256sum cato-monitor-custom-icons.tar.gz > cato-monitor-custom-icons.tar.gz.sha256
+                md5sum cato-monitor-custom-icons.tar.gz > cato-monitor-custom-icons.tar.gz.md5
+
+
             - name: Upload to GitHub Release
-              uses: softprops/action-gh-release@v2
+              uses: softprops/action-gh-release@v3
               with:
                 files: |
                     cato-monitor-linux-amd64.tar.gz
                     cato-monitor-linux-amd64.tar.gz.sha256
                     cato-monitor-linux-amd64.tar.gz.md5
+                    cato-monitor-custom-icons.tar.gz
+                    cato-monitor-custom-icons.tar.gz.sha256
+                    cato-monitor-custom-icons.tar.gz.md5
