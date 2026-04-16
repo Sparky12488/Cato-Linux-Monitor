@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"log"
 	"os"
 	"os/exec"
@@ -10,6 +11,9 @@ import (
 	"github.com/getlantern/systray"
 	"github.com/godbus/dbus/v5"
 )
+
+//go:embed icons/*.png
+var iconFS embed.FS
 
 type CatoState int
 
@@ -33,25 +37,26 @@ var (
 var mStatus *systray.MenuItem
 
 func main() {
-	var err error
-	iconRed, err = os.ReadFile(("red.png"))
-	if err != nil {
-		log.Println("Notice: red.png not found")
-	}
-	iconYellow, err = os.ReadFile("yellow.png")
-	if err != nil {
-		log.Println("Notice: yellow.png not found")
-	}
-	iconGreen, err = os.ReadFile("green.png")
-	if err != nil {
-		log.Println("Notice: green.png not found")
-	}
-	iconBlue, err = os.ReadFile("blue.png")
-	if err != nil {
-		log.Println("Notice: blue.png not found")
+	// Load icons with our new fallback function
+	iconRed = loadIcon("icons/red.png")
+	iconYellow = loadIcon("icons/yellow.png")
+	iconGreen = loadIcon("icons/green.png")
+	iconBlue = loadIcon("icons/blue.png")
+	systray.Run(onReady, onExit)
+}
+
+func loadIcon(path string) []byte {
+	data, err := os.ReadFile(path)
+	if err == nil {
+		log.Printf("Loaded custom icon from filesystem: %s\n", path)
+		return data
 	}
 
-	systray.Run(onReady, onExit)
+	data, err = iconFS.ReadFile(path)
+	if err != nil {
+		log.Printf("Notice: Embedded icon %s not found\n", path)
+	}
+	return data
 }
 
 func onReady() {
@@ -94,8 +99,6 @@ func monitorCato() {
 			log.Printf("Command failed with error: %v. Output was: %s\n", err, output)
 			updateState(StateDisconnected)
 		} else {
-			// Uncomment this line if you want to see a success message every 5 seconds!
-			// log.Printf("Command succeeded. Output length: %d bytes\n", len(output))
 
 			isConnected := strings.Contains(output, "STATE_AUTHENTICATED")
 			needsUpdate := strings.Contains(output, "New client version is available")
