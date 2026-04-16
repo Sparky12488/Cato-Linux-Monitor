@@ -1,0 +1,10 @@
+# Update path, place file here and remove this line -> ~/.config/autostart/cato-monitor.desktop
+[Desktop Entry]
+Type=Application
+Exec=/path/to/cato-monitor/cato-monitor
+Path=/path/to/cato-monitor/
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name=Cato Monitor
+Comment=System tray monitor for Cato SDP
