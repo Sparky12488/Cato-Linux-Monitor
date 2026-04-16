@@ -1,0 +1,45 @@
+name: Build and Release 
+
+on:
+    push:
+        tags:
+            - 'v*'
+
+permissions:
+    contents: write
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+            
+            - name: Set up Go
+              uses: actions/setup-go@v5
+              with:
+                go-version: '1.22'
+            
+            - name: Install Linux Dependencies
+              run: |
+                 sudo apt-update
+                 sudo apt-get install -y gcc libgtk-3-dev libayatana-appindicator3-dev
+            
+            - name: Build Binary
+              run: go build -v -o cato-monitor main.go
+
+            - name: Package Release
+              run: tar -czvf cato-monitor-linux-amd64.tar.gz cato-monitor
+
+            - name: Generate Checksums
+              run: |
+                sha256sum cato-monitor-linux-amd64.tar.gz > cato-monitor-linux-amd64.tar.gz.sha256
+                md5sum cato-monitor-linux-amd64.tar.gz > cato-monitor-linux-amd64.tar.gz.md5
+
+            - name: Upload to GitHub Release
+              uses: softprops/action-gh-release@v2
+              with:
+                files: |
+                    cato-monitor-linux-amd64.tar.gz
+                    cato-monitor-linux-amd64.tar.gz.sha256
+                    cato-monitor-linux-amd64.tar.gz.md5
